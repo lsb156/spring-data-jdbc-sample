@@ -30,7 +30,7 @@ class Account (
 
     @NotNull
     @PastOrPresent
-    val createAt: Instant = Instant.now()
+    val createdAt: Instant = Instant.now()
 
 ) {
     fun lock() {
@@ -57,7 +57,7 @@ class Account (
     }
 
     override fun toString(): String {
-        return "Account(id=$id, loginId='$loginId', name='$name', state=$state, email=$email, createAt=$createAt)"
+        return "Account(id=$id, loginId='$loginId', name='$name', state=$state, email=$email, createdAt=$createdAt)"
     }
 
 }

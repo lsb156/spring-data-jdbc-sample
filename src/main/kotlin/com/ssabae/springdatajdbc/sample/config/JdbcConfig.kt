@@ -9,8 +9,11 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.annotation.Order
 import org.springframework.core.convert.converter.Converter
+import org.springframework.data.convert.ReadingConverter
+import org.springframework.data.convert.WritingConverter
 import org.springframework.data.jdbc.core.convert.JdbcCustomConversions
 import org.springframework.data.jdbc.repository.config.AbstractJdbcConfiguration
+import org.springframework.data.relational.core.conversion.MutableAggregateChange
 import org.springframework.data.relational.core.mapping.event.BeforeSaveCallback
 import java.lang.IllegalStateException
 import java.sql.Clob
@@ -22,12 +25,14 @@ import javax.validation.Validator
 class JdbcConfig : AbstractJdbcConfiguration() {
 
     companion object {
+        @WritingConverter
         class EncryptStringWritingConverter(private val encryptor: Encryptor) : Converter<EncryptString, ByteArray> {
             override fun convert(source: EncryptString): ByteArray? {
                 return this.encryptor.encrypt(source.value)
             }
         }
 
+        @ReadingConverter
         class EncryptStringReadingConverter(private val encryptor: Encryptor) : Converter<ByteArray, EncryptString> {
             override fun convert(source: ByteArray): EncryptString? {
                 val value = this.encryptor.decrypt(source) ?: return null
@@ -35,7 +40,7 @@ class JdbcConfig : AbstractJdbcConfiguration() {
             }
         }
 
-        class ClobConverter() : Converter<Clob, String> {
+        class ClobConverter : Converter<Clob, String> {
             override fun convert(source: Clob): String? {
                 try {
                     return if (Math.toIntExact(source.length()) == 0) ""
@@ -62,9 +67,9 @@ class JdbcConfig : AbstractJdbcConfiguration() {
     @Bean
     @Order
     fun validateBeforeSave(validator: Validator): BeforeSaveCallback<*> {
-        return BeforeSaveCallback<Any> { aggregate, aggregateChange ->
+        return BeforeSaveCallback { aggregate: Any, mutableAggregateChange: MutableAggregateChange<*> ->
             val violations = validator.validate(aggregate)
-            if (violations.isEmpty()) {
+            if (violations.isEmpty().not()) {
                 throw ConstraintViolationException(violations)
             }
             aggregate
