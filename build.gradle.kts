@@ -31,10 +31,13 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter-validation")
-    implementation("org.springframework.data:spring-data-commons:2.3.0.RC2")
     implementation("org.springframework.data:spring-data-jdbc:2.0.0.RC2")
     implementation("org.springframework.data:spring-data-relational:2.0.0.RC2")
+    implementation("org.springframework.data:spring-data-commons:2.3.0.RC2")
     implementation("org.liquibase:liquibase-core")
+
+    compileOnly("org.projectlombok:lombok")
+    annotationProcessor("org.projectlombok:lombok")
 
     runtimeOnly("com.h2database:h2")
 

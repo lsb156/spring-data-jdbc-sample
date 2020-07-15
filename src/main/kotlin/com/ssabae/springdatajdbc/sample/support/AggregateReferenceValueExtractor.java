@@ -9,7 +9,7 @@ public class AggregateReferenceValueExtractor implements ValueExtractor<Aggregat
     public AggregateReferenceValueExtractor() { }
 
     @Override
-    public void extractValues(AggregateReference<?, ?> originalValue, ValueExtractor.ValueReceiver receiver) {
+    public void extractValues(AggregateReference<?, ?> originalValue, ValueReceiver receiver) {
         receiver.value("id", originalValue.getId());
     }
 }
